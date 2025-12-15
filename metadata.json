@@ -1,0 +1,5 @@
+{
+  "name": "IntelliGrade",
+  "description": "A multi-model AI dashboard for forecasting academic performance based on patterns of AI tool dependency.",
+  "requestFramePermissions": []
+}
