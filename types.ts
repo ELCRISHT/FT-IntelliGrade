@@ -31,5 +31,10 @@ export enum View {
 export interface User {
   email: string;
   name: string;
+  firstName?: string;
+  lastName?: string;
+  middleInitial?: string;
+  college?: string;
+  contactNumber?: string;
   role: 'admin' | 'faculty' | 'student';
 }

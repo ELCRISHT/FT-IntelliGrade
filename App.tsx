@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { View, User, Student } from './types';
 import { MOCK_STUDENTS } from './constants';
 import Layout from './components/Layout';
@@ -35,12 +35,20 @@ const App: React.FC = () => {
     localStorage.setItem('theme', theme);
   }, [theme]);
 
+  // STRICT DATA ISOLATION: Gatekeep all student data here
+  const displayStudents = useMemo(() => {
+    if (!user) return [];
+    if (user.role === 'admin') return students;
+    // Faculty only sees students from their specific college chosen at signup
+    return students.filter(s => s.College === user.college);
+  }, [students, user]);
+
   const toggleTheme = () => {
     setTheme(prev => prev === 'light' ? 'dark' : 'light');
   };
 
-  const handleLogin = (user: User) => {
-    setUser(user);
+  const handleLogin = (userData: User) => {
+    setUser(userData);
     setCurrentView(View.Dashboard);
   };
 
@@ -58,17 +66,17 @@ const App: React.FC = () => {
       case View.Signup:
         return <Auth mode="signup" onLogin={handleLogin} onNavigate={setCurrentView} theme={theme} toggleTheme={toggleTheme} />;
       case View.Dashboard:
-        return <Dashboard students={students} setStudents={setStudents} theme={theme} />;
+        return <Dashboard students={displayStudents} setStudents={setStudents} theme={theme} user={user} />;
       case View.IPredict:
-        return <IPredict />;
+        return <IPredict user={user} />;
       case View.Directory:
-        return <StudentDirectory students={students} setStudents={setStudents} />;
+        return <StudentDirectory students={displayStudents} setStudents={setStudents} user={user} />;
       case View.Reports:
-        return <Reports students={students} theme={theme} />;
+        return <Reports students={displayStudents} theme={theme} user={user} />;
       case View.Settings:
         return <Settings user={user} />;
       default:
-        return <Dashboard students={students} setStudents={setStudents} theme={theme} />;
+        return <Dashboard students={displayStudents} setStudents={setStudents} theme={theme} user={user} />;
     }
   };
 

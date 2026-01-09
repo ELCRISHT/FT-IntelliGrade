@@ -1,25 +1,25 @@
 import { Student } from './types';
 
 export const COLLEGES = [
-  "College of Engineering",
   "College of Computer Studies",
-  "College of Industrial Technology",
-  "College of Arts and Science",
-  "College of Business Administration and Accountancy",
+  "College of Engineering",
+  "College of Arts and Sciences",
   "College of Criminal Justice Education",
-  "College of Teacher Education", 
-  "College of International Hospitality and Tourism Management"
+  "College of Teacher Education",
+  "College of Industrial Technology",
+  "College of International Hospitality Management and Tourism",
+  "College of Business Administration and Accountancy"
 ];
 
 export const COLLEGE_CODES: Record<string, string> = {
-  "College of Engineering": "COE",
   "College of Computer Studies": "CCS",
-  "College of Industrial Technology": "CIT",
-  "College of Arts and Science": "CAS",
-  "College of Business Administration and Accountancy": "CBAA",
+  "College of Engineering": "COE",
+  "College of Arts and Sciences": "CAS",
   "College of Criminal Justice Education": "CCJE",
   "College of Teacher Education": "CTE",
-  "College of International Hospitality and Tourism Management": "CIHMT"
+  "College of Industrial Technology": "CIT",
+  "College of International Hospitality Management and Tourism": "CIHMT",
+  "College of Business Administration and Accountancy": "CBAA"
 };
 
 export const TOOLS = ["ChatGPT", "Gemini", "Grammarly", "Quillbot", "Bing AI"];
@@ -35,24 +35,18 @@ const generateStudents = (count: number): Student[] => {
   const students: Student[] = [];
   
   for (let i = 1; i <= count; i++) {
-    // Simulate patterns: 
-    // Engineering/CS students might have higher dependency on Coding/Problem Solving
-    // Teacher Ed might have higher motivation but variable dependency
     const college = pick(COLLEGES);
     let reading = random(1, 7);
     let writing = random(1, 7);
     let numeracy = random(1, 7);
     let motivation = random(1, 7);
     
-    // Bias data slightly to create realistic correlations (High Dependency often correlates with slightly lower motivation in "At Risk" groups)
     if (Math.random() > 0.7) {
-       // Create an "At Risk" profile
        reading = random(5, 7);
        writing = random(5, 7);
        numeracy = random(5, 7);
        motivation = random(1, 3.5);
     } else if (Math.random() > 0.7) {
-       // Create a "High Performer" profile
        reading = random(1, 4);
        writing = random(1, 4);
        numeracy = random(1, 4);

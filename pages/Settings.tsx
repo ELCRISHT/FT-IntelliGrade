@@ -1,6 +1,6 @@
 import React from 'react';
 import { User } from '../types';
-import { User as UserIcon, Shield, Bell, Save } from 'lucide-react';
+import { User as UserIcon, Shield, Bell, Save, Phone } from 'lucide-react';
 
 interface SettingsProps {
   user: User | null;
@@ -21,13 +21,21 @@ const Settings: React.FC<SettingsProps> = ({ user }) => {
               <UserIcon className="text-blue-600 dark:text-blue-400 w-5 h-5" /> Profile Information
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-               <div>
+               <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Full Name</label>
                   <input type="text" defaultValue={user?.name} className="w-full p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg disabled:opacity-70" disabled />
                </div>
                <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Email</label>
                   <input type="email" defaultValue={user?.email} className="w-full p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg disabled:opacity-70" disabled />
+               </div>
+               <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Contact Number</label>
+                  <input type="tel" defaultValue={user?.contactNumber || 'Not provided'} className="w-full p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg disabled:opacity-70" disabled />
+               </div>
+               <div>
+                  <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">College</label>
+                  <input type="text" defaultValue={user?.college || 'General'} className="w-full p-2 border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-white rounded-lg disabled:opacity-70" disabled />
                </div>
                <div>
                   <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-1">Role</label>
