@@ -136,10 +136,10 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
       <section id="overview" className="flex-1 flex items-center justify-center bg-slate-50 dark:bg-slate-900 py-20 px-4">
         <div className="max-w-4xl mx-auto text-center space-y-8">
           <h1 className="text-4xl md:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-tight">
-            Forecasting Academic Performance with <span className="text-blue-600 dark:text-blue-400">AI Dependency</span> Analytics
+            Forecasting Academic Performance with <span className="text-blue-600 dark:text-blue-400">AI Dependency</span> Patterns
           </h1>
           <p className="text-lg md:text-xl text-slate-600 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed">
-            IntelliGrade connects students' AI tool usage patterns with their academic outcomes using advanced Logistic Regression models.
+            IntelliGrade connects students' AI tool usage patterns with their academic outcomes using Logistic Regression model.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button 
@@ -163,7 +163,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl font-bold text-slate-900 dark:text-white">How IntelliGrade Works</h2>
-            <p className="mt-4 text-slate-600 dark:text-slate-400">A systematic approach to analyzing AI dependency.</p>
+            <p className="mt-4 text-slate-600 dark:text-slate-400">A systematic approach to analyzing AI dependency patterns.</p>
           </div>
           
           {/* Theory Cards */}
@@ -177,13 +177,13 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
             <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-shadow">
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Model Prediction</h3>
               <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                Our Logistic Regression algorithm analyzes patterns to classify students into performance tiers.
+                Our Logistic Regression algorithm analyzes patterns to classify students into performance aspects.
               </p>
             </div>
             <div className="p-8 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-800 hover:shadow-lg transition-shadow">
-              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Actionable Insights</h3>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-3">Insights</h3>
               <p className="text-slate-600 dark:text-slate-400 leading-relaxed">
-                Educators receive early warning reports for at-risk students to provide timely intervention.
+                Educators receive reports for at-risk students to provide timely intervention.
               </p>
             </div>
           </div>
@@ -230,7 +230,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
                        </div>
                        <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-2">2. Analyze the Dashboard</h4>
                        <p className="text-sm text-slate-600 dark:text-slate-400">
-                          Review real-time KPIs. Identify the <strong>At-Risk</strong> student count and monitor <strong>Average Dependency Scores</strong> across colleges to spot trends early.
+                          Identify the <strong>At-Risk</strong> student count and monitor <strong>Average Dependency Scores</strong> across colleges to spot trends early.
                        </p>
                     </div>
                  </div>
@@ -255,7 +255,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
                  </div>
                  <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex w-8 h-8 bg-purple-600 rounded-full items-center justify-center text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-slate-900 z-10">3</div>
                  <div className="w-full md:w-1/2 pl-0 md:pl-12 text-center md:text-left text-slate-400 dark:text-slate-500 text-sm font-medium">
-                    Forecast individual outcomes
+                    Forecast individual results
                  </div>
               </div>
 
@@ -274,7 +274,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
                  </div>
                  <div className="absolute left-1/2 transform -translate-x-1/2 hidden md:flex w-8 h-8 bg-teal-600 rounded-full items-center justify-center text-white text-xs font-bold ring-4 ring-slate-50 dark:ring-slate-900 z-10">4</div>
                  <div className="w-full md:w-1/2 pr-0 md:pr-12 text-center md:text-right text-slate-400 dark:text-slate-500 text-sm font-medium">
-                    Deep dive into data
+                    Explore more about data
                  </div>
               </div>
             </div>
@@ -295,7 +295,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
                <div className="space-y-4">
                  <div className="flex items-start gap-4">
                    <div className="w-2 h-2 mt-2 rounded-full bg-blue-500"></div>
-                   <p className="text-slate-400 text-sm">Based on Cognitive Load Theory & Social Cognitive Theory.</p>
+                   <p className="text-slate-400 text-sm">Based on Cognitive Load Theory, Social Determination Theory & Social Cognitive Theory.</p>
                  </div>
                  <div className="flex items-start gap-4">
                    <div className="w-2 h-2 mt-2 rounded-full bg-blue-500"></div>
@@ -308,19 +308,19 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
                </div>
              </div>
              <div className="bg-slate-800 dark:bg-slate-900 p-8 rounded-2xl border border-slate-700 dark:border-slate-800">
-                <h3 className="text-xl font-semibold mb-4 text-blue-400">Project Team</h3>
+                <h3 className="text-xl font-semibold mb-4 text-blue-400">IntelliGrade Team</h3>
                 <ul className="space-y-3 text-slate-300">
                   <li className="flex justify-between border-b border-slate-700 dark:border-slate-800 pb-2">
                     <span>Ariane Karell A. Balan</span>
-                    <span className="text-slate-500">Researcher</span>
+                    <span className="text-slate-500">Project Manager</span>
                   </li>
                   <li className="flex justify-between border-b border-slate-700 dark:border-slate-800 pb-2">
                     <span>John Reed C. Lajom</span>
-                    <span className="text-slate-500">Researcher</span>
+                    <span className="text-slate-500">Resource Associate</span>
                   </li>
                   <li className="flex justify-between">
                     <span>Mary Joy M. Valdez</span>
-                    <span className="text-slate-500">Researcher</span>
+                    <span className="text-slate-500">Full Stack Developer</span>
                   </li>
                 </ul>
              </div>
@@ -338,7 +338,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
           <div className="flex flex-col md:flex-row justify-center gap-8">
             <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-xl border border-transparent dark:border-slate-800">
                <p className="font-semibold text-slate-900 dark:text-white">Email Support</p>
-               <p className="text-blue-600 dark:text-blue-400">support@intelligrade.edu.ph</p>
+               <p className="text-blue-600 dark:text-blue-400">0322-1518@lspu.edu.ph</p>
             </div>
             <div className="p-6 bg-slate-50 dark:bg-slate-900 rounded-xl border border-transparent dark:border-slate-800">
                <p className="font-semibold text-slate-900 dark:text-white">Location</p>
@@ -351,7 +351,7 @@ const Welcome: React.FC<WelcomeProps> = ({ onNavigate, theme, toggleTheme }) => 
       {/* Footer */}
       <footer className="bg-slate-50 dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-12">
         <div className="max-w-7xl mx-auto px-4 text-center text-slate-400 text-sm">
-          &copy; 2025 IntelliGrade Research Team. All rights reserved.
+          &copy; 2025 IntelliGrade. All rights reserved.
         </div>
       </footer>
     </div>
