@@ -35,12 +35,13 @@ import {
 } from 'lucide-react';
 
 interface StudentDirectoryProps {
-  students: Student[];
-  setStudents: React.Dispatch<React.SetStateAction<Student[]>>;
-  user: User | null;
+   students: Student[];
+   user: User | null;
+   onImportStudents: (students: Student[]) => Promise<void>;
+   isImporting: boolean;
 }
 
-const StudentDirectory: React.FC<StudentDirectoryProps> = ({ students, setStudents, user }) => {
+const StudentDirectory: React.FC<StudentDirectoryProps> = ({ students, user, onImportStudents, isImporting }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCollege, setSelectedCollege] = useState('All');
   const [selectedYear, setSelectedYear] = useState('All');
@@ -151,6 +152,7 @@ const StudentDirectory: React.FC<StudentDirectoryProps> = ({ students, setStuden
   };
 
   const handleExportAllCSV = () => {
+      if (students.length === 0) return;
     const header = Object.keys(students[0]).join(',');
     const rows = students.map(obj => Object.values(obj).join(',')).join('\n');
     const csv = `${header}\n${rows}`;
@@ -165,6 +167,7 @@ const StudentDirectory: React.FC<StudentDirectoryProps> = ({ students, setStuden
   };
 
   const handleExportAllPDF = () => {
+     if (students.length === 0) return;
       const doc = new jsPDF('l');
       doc.setFontSize(14);
       doc.text(`IntelliGrade - Student Dataset`, 14, 15);
@@ -183,9 +186,13 @@ const StudentDirectory: React.FC<StudentDirectoryProps> = ({ students, setStuden
       doc.save(`intelligrade_dataset_${new Date().toISOString().split('T')[0]}.pdf`);
   };
 
-  const handleImportClick = () => { if (fileInputRef.current) fileInputRef.current.click(); };
+   const handleImportClick = () => {
+      if (isFaculty) return;
+      if (fileInputRef.current) fileInputRef.current.click();
+   };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (isFaculty) return;
     const file = event.target.files?.[0];
     if (!file) return;
     const reader = new FileReader();
@@ -201,7 +208,7 @@ const StudentDirectory: React.FC<StudentDirectoryProps> = ({ students, setStuden
       const newStudents: Student[] = [];
       const errors: string[] = [];
       
-      for(let i=1; i<lines.length; i++) {
+         for(let i=1; i<lines.length; i++) {
         const values = lines[i].split(delimiter).map(clean);
         if (values.length !== headers.length) {
           errors.push(`Row ${i + 1}: Column count mismatch`);
@@ -227,8 +234,18 @@ const StudentDirectory: React.FC<StudentDirectoryProps> = ({ students, setStuden
            newStudents.push(studentObj as Student);
         }
       }
-      if (newStudents.length > 0) setStudents(prev => [...prev, ...newStudents]);
-      setImportReport({ successes: newStudents.length, errors });
+         const run = async () => {
+            if (newStudents.length > 0) {
+               try {
+                  await onImportStudents(newStudents);
+               } catch (error) {
+                  console.error('Import failed', error);
+                  errors.push('Import failed. Check console for details.');
+               }
+            }
+            setImportReport({ successes: newStudents.length, errors });
+         };
+         void run();
     };
     reader.readAsText(file);
     event.target.value = '';
@@ -319,8 +336,8 @@ const StudentDirectory: React.FC<StudentDirectoryProps> = ({ students, setStuden
         <div className="flex flex-col md:flex-row gap-3">
            <div className="flex gap-2">
               <input type="file" accept=".csv" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
-              <button onClick={handleImportClick} className="px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2">
-                 <Upload className="w-4 h-4" /> Import CSV
+              <button onClick={handleImportClick} disabled={isFaculty || isImporting} className="px-3 py-2 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-lg text-sm font-medium hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-60">
+                 <Upload className={`w-4 h-4 ${isImporting ? 'animate-spin' : ''}`} /> Import CSV
               </button>
               <div className="relative group">
                  <button className="px-3 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 flex items-center gap-2">

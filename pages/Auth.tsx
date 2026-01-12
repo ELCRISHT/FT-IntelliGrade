@@ -1,7 +1,16 @@
 
-import React, { useState, useMemo } from 'react';
-import { View, User } from '../types';
+import React, { useMemo, useState } from 'react';
+import { View } from '../types';
 import { COLLEGES, COLLEGE_CODES } from '../constants';
+import {
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
+  signInWithEmailAndPassword,
+  updateProfile,
+} from 'firebase/auth';
+import { FirebaseError } from 'firebase/app';
+import { auth } from '../services/firebase';
+import { registerProfile } from '../services/api';
 import { 
   GraduationCap, 
   Mail, 
@@ -22,13 +31,13 @@ import {
 
 interface AuthProps {
   mode: 'login' | 'signup';
-  onLogin: (user: User) => void;
+  onAuthenticated: () => void;
   onNavigate: (view: View) => void;
   theme: 'light' | 'dark';
   toggleTheme: () => void;
 }
 
-const Auth: React.FC<AuthProps> = ({ mode, onLogin, onNavigate, theme, toggleTheme }) => {
+const Auth: React.FC<AuthProps> = ({ mode, onAuthenticated, onNavigate, theme, toggleTheme }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -62,10 +71,55 @@ const Auth: React.FC<AuthProps> = ({ mode, onLogin, onNavigate, theme, toggleThe
     return password === confirmPassword;
   }, [password, confirmPassword]);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const friendlyError = (error: unknown): string => {
+    if (error instanceof FirebaseError) {
+      switch (error.code) {
+        case 'auth/invalid-credential':
+        case 'auth/invalid-email':
+          return 'Check your email and password then try again.';
+        case 'auth/user-disabled':
+          return 'This account is disabled. Contact your administrator.';
+        case 'auth/user-not-found':
+          return 'We could not find an account with that email.';
+        case 'auth/wrong-password':
+          return 'Incorrect password. Try again or reset your password.';
+        case 'auth/email-already-in-use':
+          return 'This email is already registered.';
+        case 'auth/weak-password':
+          return 'Use a stronger password (8+ characters, with numbers and symbols).';
+        default:
+          return error.message ?? 'Authentication failed. Please try again.';
+      }
+    }
+    return 'Something went wrong. Please try again.';
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    
+
+    if (!auth) {
+      setError('Firebase authentication is not configured. Contact your administrator.');
+      return;
+    }
+
+    if (isForgotPassword) {
+      if (!email) {
+        setError('Enter the email associated with your account.');
+        return;
+      }
+      setIsLoading(true);
+      try {
+        await sendPasswordResetEmail(auth, email.trim());
+        setResetSent(true);
+      } catch (err) {
+        setError(friendlyError(err));
+      } finally {
+        setIsLoading(false);
+      }
+      return;
+    }
+
     if (mode === 'signup') {
       if (!firstName || !lastName || !selectedCollege || !contactNumber) {
         setError('Please fill in all required fields.');
@@ -78,26 +132,36 @@ const Auth: React.FC<AuthProps> = ({ mode, onLogin, onNavigate, theme, toggleThe
     }
 
     setIsLoading(true);
-    
-    // Simulate API delay
-    setTimeout(() => {
-      // Demo logic: Email containing 'admin' is assigned the Admin role
-      const isAdmin = email.toLowerCase().includes('admin');
-      
-      const userData: User = {
-        email: email,
-        name: mode === 'signup' ? `${firstName} ${lastName}` : (isAdmin ? 'Admin User' : 'Faculty Member'),
-        firstName: mode === 'signup' ? firstName : undefined,
-        lastName: mode === 'signup' ? lastName : undefined,
-        middleInitial: mode === 'signup' ? middleInitial : undefined,
-        college: mode === 'signup' ? selectedCollege : (isAdmin ? undefined : "College of Computer Studies"),
-        contactNumber: mode === 'signup' ? contactNumber : undefined,
-        role: isAdmin ? 'admin' : 'faculty'
-      };
-      
+    try {
+      if (mode === 'login') {
+        await signInWithEmailAndPassword(auth, email.trim(), password);
+      } else {
+        const credential = await createUserWithEmailAndPassword(auth, email.trim(), password);
+
+        const derivedRole: 'admin' | 'faculty' = email.toLowerCase().includes('admin') ? 'admin' : 'faculty';
+        if (credential.user) {
+          await updateProfile(credential.user, {
+            displayName: `${firstName} ${lastName}`.trim(),
+          });
+        }
+
+        await registerProfile({
+          firstName,
+          lastName,
+          middleInitial: middleInitial || undefined,
+          college: derivedRole === 'faculty' ? selectedCollege : undefined,
+          contactNumber: contactNumber || undefined,
+          role: derivedRole,
+        });
+      }
+
+      onAuthenticated();
+    } catch (err) {
+      console.error('Authentication error', err);
+      setError(friendlyError(err));
+    } finally {
       setIsLoading(false);
-      onLogin(userData);
-    }, 1200);
+    }
   };
 
   const handleBackToLogin = () => {

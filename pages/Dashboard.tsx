@@ -30,25 +30,29 @@ import {
 
 interface DashboardProps {
   students: Student[];
-  setStudents: React.Dispatch<React.SetStateAction<Student[]>>;
   theme: 'light' | 'dark';
   user: User | null;
+  onImportStudents: (students: Student[]) => Promise<void>;
+  onRefreshStudents: () => Promise<void>;
+  isRefreshing: boolean;
+  totalStudents: number;
 }
 
-const Dashboard: React.FC<DashboardProps> = ({ students, setStudents, theme, user }) => {
+const Dashboard: React.FC<DashboardProps> = ({ students, theme, user, onImportStudents, onRefreshStudents, isRefreshing, totalStudents }) => {
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const isFaculty = user?.role === 'faculty';
 
   // --- Data Processing ---
-  const totalStudents = students.length;
+  const sampleSize = students.length;
   
-  const avgReading = totalStudents > 0 ? students.reduce((acc, curr) => acc + curr.Reading_Dependency_Score, 0) / totalStudents : 0;
-  const avgWriting = totalStudents > 0 ? students.reduce((acc, curr) => acc + curr.Writing_Dependency_Score, 0) / totalStudents : 0;
-  const avgNumeracy = totalStudents > 0 ? students.reduce((acc, curr) => acc + curr.Numeracy_Dependency_Score, 0) / totalStudents : 0;
+  const avgReading = sampleSize > 0 ? students.reduce((acc, curr) => acc + curr.Reading_Dependency_Score, 0) / sampleSize : 0;
+  const avgWriting = sampleSize > 0 ? students.reduce((acc, curr) => acc + curr.Writing_Dependency_Score, 0) / sampleSize : 0;
+  const avgNumeracy = sampleSize > 0 ? students.reduce((acc, curr) => acc + curr.Numeracy_Dependency_Score, 0) / sampleSize : 0;
   const overallAvg = (avgReading + avgWriting + avgNumeracy) / 3;
-  const avgMotivation = totalStudents > 0 ? students.reduce((acc, curr) => acc + curr.Motivation_Score, 0) / totalStudents : 0;
+  const avgMotivation = sampleSize > 0 ? students.reduce((acc, curr) => acc + curr.Motivation_Score, 0) / sampleSize : 0;
 
   const atRiskStudents = students.filter(s => {
     const avgDep = (s.Reading_Dependency_Score + s.Writing_Dependency_Score + s.Numeracy_Dependency_Score) / 3;
@@ -101,15 +105,22 @@ const Dashboard: React.FC<DashboardProps> = ({ students, setStudents, theme, use
 
   const handleImportClick = () => { if (fileInputRef.current) fileInputRef.current.click(); };
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
+    setIsImporting(true);
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target?.result as string;
-      if (!text) return;
+      if (!text) {
+        setIsImporting(false);
+        return;
+      }
       const lines = text.split(/\r\n|\n/).filter(l => l.trim().length > 0);
-      if (lines.length < 2) return;
+      if (lines.length < 2) {
+        setIsImporting(false);
+        return;
+      }
       const firstLine = lines[0];
       const delimiter = [',', ';', '\t', '|'].reduce((a, b) => (firstLine.split(a).length > firstLine.split(b).length ? a : b));
       const clean = (s: string) => s ? s.trim().replace(/^"|"$/g, '') : '';
@@ -136,7 +147,12 @@ const Dashboard: React.FC<DashboardProps> = ({ students, setStudents, theme, use
             if (studentObj.Student_ID) newStudents.push(studentObj as Student);
         } catch(err) { console.error(err); }
       }
-      if (newStudents.length > 0) setStudents(prev => [...prev, ...newStudents]);
+      const sync = async () => {
+        if (newStudents.length > 0) {
+          await onImportStudents(newStudents);
+        }
+      };
+      sync().catch((error) => console.error('Import failed', error)).finally(() => setIsImporting(false));
     };
     reader.readAsText(file);
     event.target.value = '';
@@ -287,7 +303,7 @@ const Dashboard: React.FC<DashboardProps> = ({ students, setStudents, theme, use
              <input type="file" accept=".csv" ref={fileInputRef} className="hidden" onChange={handleFileUpload} />
            )}
            {!isFaculty && (
-             <button onClick={handleImportClick} className="text-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg font-medium border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2">
+             <button onClick={handleImportClick} disabled={isImporting} className="text-sm bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 px-4 py-2 rounded-lg font-medium border border-slate-200 dark:border-slate-700 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-2 disabled:opacity-60">
                <Upload className="w-4 h-4" /> Import CSV
              </button>
            )}
@@ -302,8 +318,8 @@ const Dashboard: React.FC<DashboardProps> = ({ students, setStudents, theme, use
                 </div>
               )}
            </div>
-           <button onClick={() => window.location.reload()} className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-2">
-             <RefreshCw className="w-4 h-4" /> Refresh
+           <button onClick={() => onRefreshStudents()} disabled={isRefreshing} className="text-sm bg-blue-600 text-white px-4 py-2 rounded-lg font-medium shadow-sm hover:bg-blue-700 transition-colors flex items-center gap-2 disabled:opacity-60">
+             <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin' : ''}`} /> Refresh
            </button>
         </div>
       </div>

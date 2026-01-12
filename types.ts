@@ -12,9 +12,9 @@ export interface Student {
 }
 
 export enum PerformanceLevel {
-  High = 'High Performance',
-  Moderate = 'Moderate Performance',
-  AtRisk = 'At-Risk' // Low Performance
+  High = 'High',
+  Moderate = 'Moderate',
+  AtRisk = 'AtRisk',
 }
 
 export enum View {
@@ -29,6 +29,7 @@ export enum View {
 }
 
 export interface User {
+  uid?: string;
   email: string;
   name: string;
   firstName?: string;
